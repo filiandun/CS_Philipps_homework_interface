@@ -20,100 +20,133 @@
 
     interface IWorker
     {
-        public string name { get; set; }
-    }
-
-    class Team
-    { 
-        
+        void Do(IPart part);
     }
 
     class TeamLeader : IWorker
     {
-        public string name { get; set; }
-
-        public void CreateReport()
+        public void Do(IPart part)
         {
-
+            Console.WriteLine("Бригадир составил отчёт.");
         }
     }
 
     class Worker : IWorker
     {
-        public string name { get; set; }
-
-        public void StartBuild()
+        public void Do(IPart part)
         {
+            part.Build();
+        }
+    }
 
+    class Team
+    {
+        private List<IWorker> workers = new List<IWorker>();
+
+        public void AddWorker(IWorker worker)
+        {
+            workers.Add(worker);
         }
 
+        public void BuildHouse(House house)
+        {
+            Console.WriteLine("СТРОИТЕЛЬСТВО НАЧАТО:\n");
+
+            foreach (var part in house.parts)
+            {
+                foreach (var worker in workers)
+                {
+                    worker.Do(part);
+                }
+                Console.WriteLine();
+            }
+
+            Console.WriteLine("\nДОМ ПОСТРОЕН!");
+        }
     }
+
+
 
     interface IPart
     {
-        public string name { get; set; }
-        public void Quantity();
-
+        void Build();
     }
 
     class Basement : IPart
     {
-        public string name { get; set; }
-
-        public void Quantity()
+        public void Build()
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Постройка фундамента.");
         }
     }
 
     class Wall : IPart
     {
-        public string name { get; set; }
-
-        public void Quantity()
+        public void Build()
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Постройка стены.");
         }
     }
 
-    class Windows : IPart
+    class Window : IPart
     {
-        public string name { get; set; }
-
-        public void Quantity()
+        public void Build()
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Постройка окна.");
         }
     }
 
     class Door : IPart
     {
-        public string name { get; set; }
-
-        public void Quantity()
+        public void Build()
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Постройка двери.");
         }
     }
 
-    class Part : IPart
-    { 
-        public string name { get; set; }
-
-        public void Quantity()
+    class Roof : IPart
+    {
+        public void Build()
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Постройка крыши.");
         }
     }
 
 
+    class House
+    {
+        public List<IPart> parts;
+
+        public House()
+        {
+            this.parts = new List<IPart>();
+            this.parts.Add(new Basement());
+
+            for (int i = 0; i < 4; i++)
+            {
+                this.parts.Add(new Wall());
+                this.parts.Add(new Window());
+            }
+
+            this.parts.Add(new Door());
+            this.parts.Add(new Roof());
+        }
+    }
 
 
     internal class Program
     {
         static void Main()
         {
-            Console.WriteLine("Hello, World!");
+            Worker worker = new Worker();
+            TeamLeader teamLeader = new TeamLeader();
+
+            Team team = new Team();
+            team.AddWorker(worker);
+            team.AddWorker(teamLeader);
+
+            House house = new House();
+            team.BuildHouse(house);
         }
     }
 }
